@@ -75,12 +75,13 @@ const NavListComponent: React.FC = () => {
 
         <div className="flex items-center gap-3">
           <div className="hidden md:flex items-center gap-3">
-            <button type="button" className="p-2 text-gray-400 hover:text-gray-500">
+            <button type="button" aria-label="Search" className="p-2 text-gray-400 hover:text-gray-500">
               <i className="fas fa-search"></i>
             </button>
             <div className="relative inline-flex" ref={notificationMenuRef}>
               <button
                 type="button"
+                aria-label="Notifications"
                 className="relative rounded-full p-2 text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
                 data-notification-trigger="true"
                 onClick={toggle}
@@ -106,9 +107,12 @@ const NavListComponent: React.FC = () => {
             )}
           </div>
 
-          <button className="md:hidden text-gray-400 hover:text-gray-300 p-2"
+          <button
+            type="button"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            className="md:hidden text-gray-400 hover:text-gray-300 p-2"
             onClick={() => setMenuOpen((prev) => !prev)}>
-            <i className={`fas ${menuOpen ? "fa-xmark" : "fa-bars"} text-xl`}></i>
+            <i className={`fas ${menuOpen ? "fa-xmark" : "fa-bars"} text-xl`} />
           </button>
         </div>
       </div>
