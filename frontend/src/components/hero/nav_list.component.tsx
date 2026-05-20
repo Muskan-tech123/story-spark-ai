@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { isLoggedIn, removeUserInfo, getUserInfo } from "../../services/auth.service";
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import { USER_ROLE } from "../../constants/role";
 import logo from "../../assets/logoNew.png";
 import NotificationComponent from "../notification/notification.component";
@@ -8,6 +8,7 @@ import { useNotifications } from "../../hooks/useNotifications";
 
 const NavListComponent: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState<boolean>(isLoggedIn());
   const notificationMenuRef = useRef<HTMLDivElement | null>(null);
   const {
@@ -75,7 +76,11 @@ const NavListComponent: React.FC = () => {
 
         <div className="flex items-center gap-3">
           <div className="hidden md:flex items-center gap-3">
-            <button type="button" aria-label="Search" className="p-2 text-gray-400 hover:text-gray-500">
+            <button
+            type="button"
+            aria-label="Open Help Center"
+            onClick={() => navigate("/help-center")}
+            className="p-2 text-gray-400 hover:text-white transition">
               <i className="fas fa-search"></i>
             </button>
             <div className="relative inline-flex" ref={notificationMenuRef}>
