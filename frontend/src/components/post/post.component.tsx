@@ -52,7 +52,7 @@ const ExploreComponent = () => {
 
   const handleTagClick = (tag: string) => {
     setSelectedTags((prev) =>
-      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
     );
     setPage(1);
   };
@@ -280,10 +280,38 @@ const ExploreComponent = () => {
             </div>
 
             <div className="flex-grow">
-              <ExploreViewListComponent
-                posts={data?.posts || []}
-                isLoading={isLoading}
-              />
+              {!isLoading && data?.posts?.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-[50vh] text-center">
+                  <div className="text-6xl mb-4">📚</div>
+
+                  <h2 className="text-2xl font-semibold text-white mb-2">
+                    No stories found
+                    {searchTerm && (
+                      <span className="text-indigo-400">
+                        {" "}
+                        for "{searchTerm}"
+                      </span>
+                    )}
+                  </h2>
+
+                  <p className="text-gray-400 max-w-md">
+                    Try searching with different keywords or explore trending
+                    tags and genres.
+                  </p>
+
+                  <button
+                    onClick={resetAllStates}
+                    className="mt-6 px-5 py-2 bg-indigo-600 hover:bg-indigo-700 transition-colors rounded-md text-white"
+                  >
+                    Reset Filters
+                  </button>
+                </div>
+              ) : (
+                <ExploreViewListComponent
+                  posts={data?.posts || []}
+                  isLoading={isLoading}
+                />
+              )}
             </div>
 
             {!featuredPost && data?.meta && (
