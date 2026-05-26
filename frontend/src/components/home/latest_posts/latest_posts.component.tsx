@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import BookmarkButton from "../../BookmarkButton";
 
 const LatestPostsComponent = () => {
-  const { data, isLoading } = useGetLatestListsQuery(undefined);
+  const { data, isLoading, isError } = useGetLatestListsQuery(undefined);
   const navigate = useNavigate();
 
   const calculateReadingTime = (content: string): number => {
