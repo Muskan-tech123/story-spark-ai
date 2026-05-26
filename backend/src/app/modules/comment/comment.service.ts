@@ -45,26 +45,35 @@ const getCommentsByPostId = async (postId: string) => {
     throw new ApiError(httpStatus.NOT_FOUND, "Post not found!");
   }
 
-  const comments = await Comment.find({ postId, parentCommentId: null })
+  // Single query fetches ALL comments for the post
+  const allComments = await Comment.find({ postId })
     .populate("userId", "name email")
-    .populate({
-      path: "likes",
-    })
-    .sort({ createdAt: -1 });
-  const commentsWithReplies = await Promise.all(
-    comments.map(async (comment) => {
-      const replies = await Comment.find({ parentCommentId: comment._id })
-        .populate("userId", "name email")
-        .populate({ path: "likes" })
-        .sort({ createdAt: 1 });
-      return {
-        ...comment.toObject(),
-        replies,
-      };
-    })
-  );
-  const totalComments = await Comment.countDocuments({ postId });
-  return { comments: commentsWithReplies, totalComments };
+    .populate({ path: "likes" })
+    .sort({ createdAt: 1 })
+    .lean();
+
+  // Build lookup map: id → comment node
+  const commentMap = new Map<string, any>();
+  for (const comment of allComments) {
+    commentMap.set(comment._id.toString(), { ...comment, replies: [] });
+  }
+
+  // Assemble tree in-memory — no extra DB calls
+  const roots: any[] = [];
+  for (const comment of allComments) {
+    const node = commentMap.get(comment._id.toString());
+    if (!comment.parentCommentId) {
+      roots.push(node);
+    } else {
+      const parent = commentMap.get(comment.parentCommentId.toString());
+      if (parent) {
+        parent.replies.push(node);
+      }
+    }
+  }
+
+  const totalComments = allComments.length;
+  return { comments: roots, totalComments };
 };
 
 const toggleCommentLike = async (commentId: string, token: ITokenPayload) => {
@@ -84,10 +93,12 @@ const toggleCommentLike = async (commentId: string, token: ITokenPayload) => {
   if (!post) {
     throw new ApiError(httpStatus.NOT_FOUND, "Post not found!");
   }
-  
+
   const hasLiked = comment.likes?.includes(user._id);
   if (hasLiked) {
-    comment.likes = comment.likes?.filter((id) => id.toString() !== user._id.toString());
+    comment.likes = comment.likes?.filter(
+      (id) => id.toString() !== user._id.toString()
+    );
   } else {
     comment.likes?.push(user._id);
   }

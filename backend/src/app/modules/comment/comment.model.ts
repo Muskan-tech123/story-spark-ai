@@ -22,4 +22,7 @@ const CommentSchema: Schema<IComment> = new Schema<IComment, CommentModel>(
   { timestamps: true }
 );
 
+CommentSchema.index({ postId: 1, parentCommentId: 1 });
+CommentSchema.index({ postId: 1, createdAt: -1 });
+
 export const Comment = model<IComment, CommentModel>("Comment", CommentSchema);
