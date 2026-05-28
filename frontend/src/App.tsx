@@ -3,6 +3,7 @@ import StoryInspirationWrapper from "./components/StoryInspirationWrapper";
 import WritingAssistantComponent from "./components/writing-assistant/writing_assistant.component";
 import CollabHome from "./components/collab/CollabHome";
 import CollabRoom from "./components/collab/CollabRoom";
+import StoriesComponent from "./components/StoryInspirationWrapper";
 
 import {
   createBrowserRouter,
