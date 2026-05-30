@@ -172,6 +172,18 @@ const googleLogin = async (payload: { token: string }) => {
       throw new ApiError(httpStatus.BAD_REQUEST, "Invalid Google token");
     }
 
+    // FIX: Verify that the email address has been verified by Google.
+    // A validly signed token is NOT proof of email ownership — Google Workspace
+    // admins can create accounts with arbitrary, unverified addresses.
+    // Without this check an attacker can obtain a signed token with
+    // email_verified: false and take over any email-keyed account (CWE-287).
+    if (!payload_data.email_verified) {
+      throw new ApiError(
+        httpStatus.UNAUTHORIZED,
+        "Google email is not verified"
+      );
+    }
+
     const { email, name: googleName, picture } = payload_data;
     let user = await User.findOne({ email });
 
