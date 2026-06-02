@@ -26,6 +26,7 @@ const ForgotPasswordComponent = () => {
     try {
       await forgotPassword({ email }).unwrap();
       setSubmitted(true);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setError(
         err?.data?.message ||

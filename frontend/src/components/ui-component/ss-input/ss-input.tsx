@@ -44,30 +44,31 @@ const SSInput = <T extends FieldValues>({
 
 
   return (
-    <div className="w-full min-w-0">
+    <div className="w-full min-w-0 overflow-hidden" style={{ width: "100%", boxSizing: "border-box", maxWidth: "100%" }}>
       <label htmlFor={name} className="block text-sm font-medium text-gray-600 dark:text-gray-400">
         {label}
       </label>
-      <div className="relative mt-2 w-full min-w-0">
+      <div className="relative mt-2 w-full min-w-0" style={{ width: "100%", boxSizing: "border-box", maxWidth: "100%" }}>
         {icon && (
           <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-500">
             <i className={icon}></i>
           </span>
         )}
 
-       <input
-  type={inputType}
-  id={name}
-  className={`w-full box-border pl-8 pr-10 py-1.5 text-base text-gray-900 dark:text-gray-200 bg-white dark:bg-slate-800 border-0 sm:text-sm ${
-    error
-      ? "outline-red-500"
-      : "outline-gray-800 focus:outline-indigo-600"
-  }`}
-  placeholder={placeholder}
-  autoComplete={autoComplete}
-  autoFocus={autoFocus}
-  {...register(name, validation)}
-/>
+        <input
+          type={inputType}
+          id={name}
+          className={`block w-full max-w-full min-w-0 box-border appearance-none rounded-lg border pl-6 sm:pl-8 pr-8 sm:pr-10 py-2 sm:py-2.5 text-sm sm:text-base text-gray-900 dark:text-gray-200 bg-white dark:bg-slate-800 transition-all duration-200 ${
+            error
+              ? "border-2 border-red-500"
+              : "border-gray-300 dark:border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none"
+          }`}
+          style={{ width: "100%", boxSizing: "border-box", maxWidth: "100%" }}
+          placeholder={placeholder}
+          autoComplete={autoComplete}
+          autoFocus={autoFocus}
+          {...register(name, validation)}
+        />
         {type === "password" && (
   <button
     type="button"

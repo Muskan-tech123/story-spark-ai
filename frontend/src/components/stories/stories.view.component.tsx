@@ -35,7 +35,17 @@ interface StoriesComponentProps {
   isLogin: boolean;
   setStories: (stories: IStories[]) => void;
   onPublishSuccess?: () => void;
-  isLoading?: boolean;
+}
+
+interface IRelatedStoriesComponentProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  posts: any[];
+  currentPostId: string;
+}
+
+interface IPost extends IStories {
+  topic: ITopicData[];
+  isPublished?: boolean;
 }
 
 type StorySentenceSegment = {
@@ -76,6 +86,110 @@ const buildSentenceSegments = (content: string): StorySentenceSegment[] => {
   });
 
   return segments;
+};
+
+const getSafeFileName = (title: string, extension: "md" | "docx"): string => {
+  const safeTitle = (title || "story")
+    .trim()
+    .replace(/[^a-z0-9]+/gi, "_")
+    .replace(/^_+|_+$/g, "")
+    .toLowerCase();
+
+  return `${safeTitle || "story"}.${extension}`;
+};
+
+const downloadBlob = (blob: Blob, fileName: string) => {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+};
+
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+
+const createDocxBlob = ({
+  title,
+  content,
+  tag,
+  author,
+}: {
+  title: string;
+  content: string;
+  tag: string;
+  author: string;
+}): Blob => {
+  const paragraphs = content
+    .split(/\n+/)
+    .map((paragraph) => `<p>${escapeHtml(paragraph.trim())}</p>`)
+    .join("");
+
+  const html = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>${escapeHtml(title)}</title>
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #111827; }
+    h1 { color: #312e81; }
+    .meta { color: #64748b; font-size: 12px; margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+  <h1>${escapeHtml(title)}</h1>
+  <div class="meta">Tag: ${escapeHtml(tag)} | Author: ${escapeHtml(author)}</div>
+  ${paragraphs}
+</body>
+</html>`;
+
+  return new Blob([html], {
+    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document;charset=utf-8",
+  });
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const StoryRemixModal = StoryRemix as React.ComponentType<any>;
+
+const StoryWorldMapModal = StoryWorldMap as React.ComponentType<{
+  story?: string;
+  storyContent?: string;
+  title?: string;
+  onClose: () => void;
+}>;
+
+export const RelatedStoriesComponent: React.FC<IRelatedStoriesComponentProps> = ({
+  posts,
+  currentPostId,
+}) => {
+  const navigate = useNavigate();
+  const filteredPosts = posts.filter((post) => post._id !== currentPostId);
+
+  return (
+    <div className="mt-8">
+      <h4 className="text-lg font-bold text-slate-200 mb-4">Related Content</h4>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {filteredPosts.map((post) => (
+          <div
+            key={post._id}
+            onClick={() => navigate(`/stories/${post._id}`)}
+            className="p-4 bg-slate-700/40 rounded-xl border border-slate-600/30 cursor-pointer hover:bg-slate-700/60 transition-colors"
+          >
+            <p className="text-sm font-semibold text-white truncate">{post.title}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
@@ -423,11 +537,86 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
     );
   };
   const handleCopyStory = async () => {
-    if (selectedStory?.content) {
-      await navigator.clipboard.writeText(selectedStory.content);
-      setIsCopied(true);
-      toast.success("Story copied!");
-      setTimeout(() => setIsCopied(false), 2000);
+    if (!selectedStory?.content) return;
+
+    await navigator.clipboard.writeText(selectedStory.content);
+    setIsCopied(true);
+    toast.success("Story copied!");
+    window.setTimeout(() => setIsCopied(false), 2000);
+  };
+
+  const handleGenerateAlternateEndings = async () => {
+    if (!selectedStory) return;
+
+    clearError();
+    setIsGeneratingEndings(true);
+    const toastId = toast.loading("Generating alternate endings...");
+
+    try {
+      const payload = {
+        title: selectedStory.title,
+        content: originalStoryContent[selectedStory.uuid] || selectedStory.content,
+        tag: selectedStory.tag,
+        language: selectedStory.language || "English",
+      };
+
+      const generationRequest = isLogin
+        ? generateAlternateEndings(payload)
+        : generateFreeAlternateEndings(payload);
+
+      const res = await generationRequest.unwrap();
+
+      if (!res || !Array.isArray(res.data)) {
+        throw new Error("Unexpected response format from the AI service.");
+      }
+
+      setEndingsCache((prev) => ({ ...prev, [selectedStory.uuid]: res.data }));
+      toast.success("Alternate endings generated successfully!");
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error("[StoriesView Alternate Ending Flow Failure]:", err);
+      const errorStatus = err?.status || err?.data?.status;
+      setError(
+        errorStatus
+          ? getErrorMessage(new ApiError(errorStatus, err?.data?.message || ""))
+          : getErrorMessage(err)
+      );
+      toast.error("Failed to generate alternate endings.");
+    } finally {
+      toast.dismiss(toastId);
+      setIsGeneratingEndings(false);
+    }
+  };
+
+  const handleGenerateStoryVisuals = async () => {
+    if (!selectedStory) {
+      toast.error("No story available. Please generate a story first.");
+      return;
+    }
+
+    const toastId = toast.loading("Generating visuals...");
+
+    try {
+      const res = await generateStoryVisuals({
+        title: selectedStory.title,
+        content: selectedStory.content,
+        genre: selectedStory.genre || selectedStory.tag,
+        language: selectedStory.language,
+      }).unwrap();
+
+      if (res?.data?.scenes?.length) {
+        setStoryboardScenes(res.data.scenes);
+        setStoryboardStyleGuide(res.data.styleGuide || "");
+        setShowStoryVisualizer(true);
+        toast.success("Storyboard visuals generated successfully!");
+      } else {
+        toast.error("No storyboard scenes were returned.");
+      }
+    } catch (visualError) {
+      console.error(visualError);
+      toast.error("Failed to generate visuals. Please try again.");
+    } finally {
+      toast.dismiss(toastId);
     }
   };
 
@@ -1202,6 +1391,31 @@ if (isLoading) {
           onClose={() => setShowWorldMap(false)}
         />
       )}
+
+      {showRemix && selectedStory && (
+        <StoryRemixModal
+          story={selectedStory.content}
+          title={selectedStory.title}
+          selectedStory={selectedStory}
+          onClose={() => setShowRemix(false)}
+          onApplyRemix={(content: string) => {
+            const updatedStory = { ...selectedStory, content };
+            setSelectedStory(updatedStory);
+            setStories(stories.map((story) => (story.uuid === selectedStory.uuid ? updatedStory : story)));
+            setShowRemix(false);
+          }}
+        />
+      )}
+
+      {showStoryVisualizer && storyboardScenes.length > 0 && (
+        <StoryVisualizer
+          title={selectedStory.title}
+          scenes={storyboardScenes}
+          styleGuide={storyboardStyleGuide}
+          onClose={() => setShowStoryVisualizer(false)}
+        />
+      )}
+
       <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
