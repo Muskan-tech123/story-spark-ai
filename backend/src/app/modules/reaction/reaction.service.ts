@@ -14,41 +14,31 @@ const toggleReaction = async (
   token: ITokenPayload
 ) => {
   const { email } = token;
-  const user = await User.findOne({ email });
+
+  const user = await User.findOne({ email }).select("_id").lean();
+
   if (!user) {
     throw new ApiError(httpStatus.BAD_REQUEST, "User not found!");
   }
-  const post = await Post.findOne({ _id: postId, isDeleted: { $ne: true } });
+
+  const post = await Post.findOne({
+    _id: postId,
+    isDeleted: { $ne: true },
+  }).select("likesCount reactions");
+
   if (!post) {
     throw new ApiError(httpStatus.BAD_REQUEST, "Post not found!");
   }
-  // check existing reaction by this user for the post
-  const existing = await Reaction.findOne({
-    postId: new Types.ObjectId(postId),
-    userId: user._id,
-  });
 
-  if (existing) {
-    if (existing.type === type) {
-      // toggle off (remove reaction)
-      await Reaction.deleteOne({ _id: existing._id });
-      return { removed: true };
-    } else {
-      // change reaction type
-      existing.type = type;
-      await existing.save();
-      return { updated: true, type };
-    }
+ main
+    const newReaction = await Reaction.create({
+      postId: new Types.ObjectId(postId),
+      userId: user._id,
+      type: type,
+    });
+ main
+    };
   }
-
-  // create new reaction
-  const newReaction = await Reaction.create({
-    postId: new Types.ObjectId(postId),
-    userId: user._id,
-    type: type,
-  });
-
-  return newReaction;
 };
 
 export const ReactionService = {
