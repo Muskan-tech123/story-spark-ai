@@ -364,7 +364,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
         {selectedStory ? (
           <div className="bg-slate-800 border border-slate-700/50 p-6 rounded-2xl shadow-xl">
             <h2 className="text-2xl font-black mb-2">{selectedStory.title}</h2>
-            <div className="prose prose-invert max-w-none text-slate-300 leading-relaxed mb-6">
+            <div className="prose prose-invert max-w-none text-slate-300 leading-relaxed mb-6 max-h-[60vh] overflow-y-auto overscroll-contain">
               {selectedStory.content}
             </div>
 
