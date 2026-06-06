@@ -138,33 +138,60 @@ cp frontend/.env.example frontend/.env
 
 #### Backend (`backend/.env`)
 
+Variables marked **Yes** are required for local development. Variables marked **No** are optional and can usually use the default value. Variables marked for a feature are only required when you use that feature.
+
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | Yes | MongoDB connection string (local or [Atlas](https://www.mongodb.com/cloud/atlas)) |
-| `PORT` | No | API port (default `5000`) |
-| `NODE_ENV` | No | `development` or `production` |
-| `CORS_ORIGINS` | No | Comma-separated frontend URLs allowed for CORS requests (e.g. `http://localhost:4001`) |
-| `SALT_ROUNDS` | Yes | Bcrypt cost factor (e.g. `10`) |
-| `JWT_SECRET` | Yes | Access token signing secret |
-| `JWT_REFRESH_SECRET` | Yes | Refresh token signing secret |
-| `JWT_EXPIRES_IN` | Yes | Access token lifetime (e.g. `60d`) |
-| `JWT_REFRESH_EXPIRES_IN` | Yes | Refresh token lifetime (e.g. `120d`) |
-| `DEFAULT_ADMIN_PASSWORD` | Yes | Initial admin password on seed |
-| `OPEN_AI_KEY` | For OpenAI | [OpenAI API key](https://platform.openai.com/api-keys) |
-| `GEMINI_API_KEY` | For Gemini | [Google AI Studio key](https://aistudio.google.com/apikey) |
-| `UNSPLASH_KEY_API` | For images | [Unsplash Access Key](https://unsplash.com/developers) |
-| `UNSPLASH_KEY_API_SECRET` | For images | Unsplash secret |
-| `VERIFY_EMAIL` | For email | SMTP sender address |
-| `VERIFY_PASSWORD` | For email | SMTP password or app password |
-| `GOOGLE_CLIENT_ID` | For login with google | https://console.cloud.google.com |
+| `DATABASE_URL` | Yes | MongoDB connection string. Use a local URI such as `mongodb://localhost:27017/storysparkai` or an Atlas URI. |
+| `PORT` | No | API port number. Defaults to `5000` if unset. |
+| `NODE_ENV` | No | Runtime mode, usually `development` locally or `production` in deploys. |
+| `CORS_ORIGINS` | No | Comma-separated frontend URLs allowed for CORS requests, e.g. `http://localhost:4001`. |
+| `SALT_ROUNDS` | Yes | Bcrypt cost factor as a number, e.g. `10`. |
+| `JWT_SECRET` | Yes | Access token signing secret, e.g. `your-jwt-secret`. Use a strong random value outside local testing. |
+| `JWT_REFRESH_SECRET` | Yes | Refresh token signing secret, e.g. `your-refresh-secret`. Use a different strong value from `JWT_SECRET`. |
+| `JWT_EXPIRES_IN` | Yes | Access token lifetime, e.g. `60d`, `24h`, or another valid duration string. |
+| `JWT_REFRESH_EXPIRES_IN` | Yes | Refresh token lifetime, e.g. `120d`, `30d`, or another valid duration string. |
+| `DEFAULT_ADMIN_PASSWORD` | Yes | Initial admin password used during seeding, e.g. `admin123` for local development only. |
+| `OPEN_AI_KEY` | For OpenAI | [OpenAI API key](https://platform.openai.com/api-keys), required only when using OpenAI-backed features. |
+| `GEMINI_API_KEY` | For Gemini | [Google AI Studio key](https://aistudio.google.com/apikey), required only when using Gemini-backed features. |
+| `UNSPLASH_KEY_API` | For images | [Unsplash Access Key](https://unsplash.com/developers), required only for Unsplash image features. |
+| `UNSPLASH_KEY_API_SECRET` | For images | Unsplash secret, required only for Unsplash image features that need it. |
+| `VERIFY_EMAIL` | For email | SMTP sender address, required only for email verification or email notifications. |
+| `VERIFY_PASSWORD` | For email | SMTP password or app password, required only for email verification or email notifications. |
+| `GOOGLE_CLIENT_ID` | For login with google | Google OAuth client ID from https://console.cloud.google.com, required only for Google login. |
+
+Example backend `.env`:
+
+```env
+DATABASE_URL=mongodb://localhost:27017/storysparkai
+PORT=5000
+NODE_ENV=development
+CORS_ORIGINS=http://localhost:4001
+SALT_ROUNDS=10
+JWT_SECRET=your-jwt-secret
+JWT_REFRESH_SECRET=your-refresh-secret
+JWT_EXPIRES_IN=60d
+JWT_REFRESH_EXPIRES_IN=120d
+DEFAULT_ADMIN_PASSWORD=admin123
+```
 
 #### Frontend (`frontend/.env`)
 
+Variables prefixed with `VITE_` are exposed to the frontend by Vite. `VITE_SOCKET_URL` is optional if you are not testing real-time notifications locally.
+
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `VITE_BASE_URL` | Yes | API base URL, e.g. `http://localhost:5000/api/v1` |
-| `VITE_SOCKET_URL` | No | Socket.IO URL for real-time notifications (optional) |
-| `VITE_GOOGLE_CLIENT_ID` | Yes | https://console.cloud.google.com |
+| `VITE_BASE_URL` | Yes | Backend API base URL, e.g. `http://localhost:5000/api/v1` for local development. |
+| `VITE_SOCKET_URL` | No | Socket.IO server URL, e.g. `http://localhost:5000`. Optional unless you are using real-time notifications. |
+| `VITE_GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID from https://console.cloud.google.com. |
+
+Example frontend `.env`:
+
+```env
+VITE_BASE_URL=http://localhost:5000/api/v1
+VITE_SOCKET_URL=http://localhost:5000
+VITE_GOOGLE_CLIENT_ID=your-google-client-id
+```
 
 ### Contributing workflow
 
