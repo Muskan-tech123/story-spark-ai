@@ -50,7 +50,6 @@ router.post(
   ),
   AuthController.changePassword
 );
-  AuthController.changePassword
 
 // Forgot Password API route
 router.post(
