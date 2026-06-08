@@ -12,7 +12,7 @@ import {
   runWithQuotaCleanup,
 } from "./quota.lifecycle";
 import { generateWithGeminiStoriesStream } from "./ai_model.utils";
-
+import crypto from "crypto";
 const aiModelGenerate = catchAsync(async (req: Request, res: Response) => {
   const prompt = req.body;
   const guard = res.locals.quotaRefundGuard;
@@ -40,7 +40,7 @@ const aiFreeModelGenerate = catchAsync(async (req: Request, res: Response) => {
   let userId = req.cookies.userId as string | undefined;
 
   if (!userId) {
-    userId = Math.random().toString(36).substring(7);
+    userId = crypto.randomUUID();
     setGuestUserIdCookie(res, userId);  // ✅ Fixed: now includes sameSite
   }
 
@@ -85,7 +85,7 @@ const aiFreeModelAlternateEndings = catchAsync(
     let userId = req.cookies.userId as string | undefined;
 
     if (!userId) {
-      userId = Math.random().toString(36).substring(7);
+      userId = crypto.randomUUID();
       setGuestUserIdCookie(res, userId);  // ✅ Fixed: now includes sameSite
     }
 
@@ -171,7 +171,7 @@ const aiFreeModelRemix = catchAsync(async (req: Request, res: Response) => {
   let userId = req.cookies.userId as string | undefined;
 
   if (!userId) {
-    userId = Math.random().toString(36).substring(7);
+    userId = crypto.randomUUID();
     res.cookie("userId", userId, { maxAge: 30 * 24 * 60 * 60 * 1000 });
   }
 
@@ -215,7 +215,7 @@ const aiFreeModelTranslate = catchAsync(async (req: Request, res: Response) => {
   let userId = req.cookies.userId as string | undefined;
 
   if (!userId) {
-    userId = Math.random().toString(36).substring(7);
+    userId = crypto.randomUUID();
     res.cookie("userId", userId, { maxAge: 30 * 24 * 60 * 60 * 1000 });
   }
 
@@ -259,7 +259,7 @@ const aiFreeModelChat = catchAsync(async (req: Request, res: Response) => {
   let userId = req.cookies.userId as string | undefined;
 
   if (!userId) {
-    userId = Math.random().toString(36).substring(7);
+    userId = crypto.randomUUID();
     res.cookie("userId", userId, { maxAge: 30 * 24 * 60 * 60 * 1000 });
   }
 
@@ -303,7 +303,7 @@ const aiFreeStoryContinuation = catchAsync(async (req: Request, res: Response) =
   let userId = req.cookies.userId as string | undefined;
 
   if (!userId) {
-    userId = Math.random().toString(36).substring(7);
+    userId = crypto.randomUUID();
     setGuestUserIdCookie(res, userId);
   }
 
