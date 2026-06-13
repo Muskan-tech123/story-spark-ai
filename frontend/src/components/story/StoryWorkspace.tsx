@@ -1,3 +1,4 @@
+import { checkCharacterConsistency } from "../../utils/characterConsistency";
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import toast, { Toaster } from "react-hot-toast";
@@ -22,7 +23,10 @@ const StoryWorkspace = () => {
     (state: RootState) => state.story.currentStory
   );
   const [workspaceMode, setWorkspaceMode] = useState<"editor" | "network">("editor");
-
+  const conflicts = checkCharacterConsistency(
+  currentStory?.chapters || []
+);
+console.log(conflicts);
   const handleExportMarkdown = () => {
     if (!currentStory) {
       toast.error("No story available to export.");
@@ -177,20 +181,31 @@ const StoryWorkspace = () => {
           </div>
         </div>
 
-        {workspaceMode === "editor" ? (
-          <>
-            <StoryViewer
-              chapters={currentStory.chapters}
-              storyId={currentStory.id}
-            />
+       {workspaceMode === "editor" ? (
+  <>
+    {conflicts.length > 0 && (
+      <div className="bg-red-500 text-white p-4 m-4 rounded">
+        {conflicts.map((conflict, index) => (
+          <div key={index}>
+            Conflict detected for {conflict.character}:{" "}
+            {conflict.previous} vs {conflict.current}
+          </div>
+        ))}
+      </div>
+    )}
 
-            <div className="p-6 border-t border-zinc-800">
-              <ContinueStoryButton />
-            </div>
-          </>
-        ) : (
-          <CharacterNetwork storyId={currentStory.id} />
-        )}
+    <StoryViewer
+      chapters={currentStory.chapters}
+      storyId={currentStory.id}
+    />
+
+    <div className="p-6 border-t border-zinc-800">
+      <ContinueStoryButton />
+    </div>
+  </>
+) : (
+  <CharacterNetwork storyId={currentStory.id} />
+)}
       </div>
     </div>
   );
