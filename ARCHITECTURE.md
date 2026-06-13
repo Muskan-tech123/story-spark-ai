@@ -121,7 +121,7 @@ flowchart TD
     M --> N[✅ User Receives Story]
 ```
 
-### Request Lifecycle
+### 🔁 Request Lifecycle
 
 1. The user enters a prompt in the Story Generator page.
 2. The frontend sends the request to the backend API.
@@ -134,7 +134,7 @@ flowchart TD
 9. The backend returns the final response through the REST API.
 10. The frontend displays the generated story and available variations to the user.
 
-### Why Understanding This Flow Matters
+### ❓ Why Understanding This Flow Matters
 
 This workflow provides a high-level view of how different layers of the application interact and can help contributors quickly identify the relevant area of the codebase when working on:
 
@@ -145,7 +145,7 @@ This workflow provides a high-level view of how different layers of the applicat
 * Real-time notifications
 * Frontend story rendering
 
-### Related Components
+### 📁 Related Components
 
 | Responsibility                 | Location                                   |
 | ------------------------------ | ------------------------------------------ |
@@ -157,7 +157,7 @@ This workflow provides a high-level view of how different layers of the applicat
 | AI integration layer           | `backend/src/`                             |
 | Real-time notifications        | Socket.IO implementation in `backend/src/` |
 
-### Common Failure Scenarios
+### ⛔ Common Failure Scenarios
 
 * Invalid or expired JWT token → Authentication error returned.
 * Invalid request payload → Validation error returned.
