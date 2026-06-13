@@ -88,6 +88,33 @@ flowchart TD
 ---
 
 ## 🧱 Layer-by-Layer Breakdown
+## Story Generation Request Flow
+
+The following diagram illustrates how a story generation request moves through the Story Spark AI system.
+
+```mermaid
+flowchart LR
+    A[User Enters Prompt] --> B[Frontend]
+    B --> C[Backend API]
+    C --> D[JWT Validation]
+    D --> E[OpenAI / Gemini]
+    E --> F[Backend Processing]
+    F --> G[MongoDB Storage]
+    G --> H[API Response]
+    H --> I[Frontend Display]
+    I --> J[User Receives Story]
+```
+
+### Request Lifecycle
+
+1. User enters a prompt in the Story Generator page.
+2. Frontend sends the request to the backend API.
+3. Backend validates authentication and request data.
+4. AI provider generates story content.
+5. Backend processes and formats the generated response.
+6. Story data is stored in MongoDB.
+7. Backend returns the response.
+8. Frontend displays generated story variations to the user.
 
 ### 1. ⚛️ Frontend — `frontend/`
 React + Vite + TypeScript SPA running on port **4001**.
