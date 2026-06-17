@@ -212,46 +212,6 @@ const SignUpComponent = () => {
     toast.error("Google login failed. Please try again.");
   };
 
-  const handleResendOtp = async () => {
-    if (!registerInfo) return;
-    setIsBusy(true);
-    try {
-      const res = await emailVerify({
-        name: registerInfo.name,
-        email: registerInfo.email,
-      }).unwrap();
-      if (res?.data) {
-        const { expiresAt } = res.data;
-        setExpiredAt(new Date(expiresAt).getTime());
-        toast.success("OTP resent successfully!");
-        setCooldown(60);
-      }
-    } catch (error) {
-      toast.error("Failed to resend OTP. Please try again.");
-    } finally {
-      setIsBusy(false);
-    }
-  };
-
-  const handleGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
-    if (!credentialResponse.credential) {
-      toast.error("Google login failed");
-      return;
-    }
-    setIsBusy(true);
-    try {
-      const res = await googleLogin({ token: credentialResponse.credential }).unwrap();
-      if (res?.data?.accessToken) {
-        storeUserInfo({ accessToken: res.data.accessToken });
-        toast.success("Logged in with Google successfully!");
-        navigate("/");
-      }
-    } catch (error) {
-      toast.error("Google authentication failed");
-    } finally {
-      setIsBusy(false);
-    }
-  };
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 px-4 py-8 sm:py-12 relative overflow-x-hidden text-slate-900 dark:text-slate-100 box-border">
@@ -260,7 +220,7 @@ const SignUpComponent = () => {
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-600/20 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="flex w-full max-w-md flex-col justify-center py-6 relative z-10 px-2 sm:px-0 min-w-0 box-border mx-auto">
+      <div className="flex w-full max-w-md flex-col justify-center py-6 relative z-10 px-2 sm:px-0 mx-auto">
 
         {/* Title */}
         <div className="mb-6 text-center">
@@ -270,7 +230,7 @@ const SignUpComponent = () => {
         </div>
 
         {/* Card */}
-        <div className="bg-white dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700/50 rounded-2xl p-5 sm:p-8 shadow-2xl w-full min-w-0 overflow-hidden box-border">
+       <div className="bg-white dark:bg-slate-800/60 backdrop-blur-xl border border-slate-200 dark:border-slate-700/50 rounded-2xl p-5 sm:p-8 shadow-2xl w-full overflow-hidden">
 
           <h3 className="text-center text-xl sm:text-2xl font-bold tracking-tight text-slate-800 dark:text-slate-200">
             {showOtpField ? "Verify Your Email" : "Create Account"}
@@ -296,9 +256,13 @@ const SignUpComponent = () => {
           )}
 
           {!showOtpField ? (
-            <form className="space-y-5 w-full min-w-0 block box-border" onSubmit={handleSubmit(onSubmit)}>
+            <form
+  className="space-y-5 w-full max-w-full overflow-hidden"
+  onSubmit={handleSubmit(onSubmit)}
+>
 
               <SSInput
+
                 label="Name"
                 name="name"
                 placeholder="Enter your name"
