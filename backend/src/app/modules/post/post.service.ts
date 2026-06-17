@@ -14,12 +14,8 @@ import paginationHelper from "../../../utils/pagination_helper";
 import { postSearchFields } from "./post.constant";
 import { SortOrder, Types } from "mongoose";
 import { GamificationService } from "../gamification/gamification.service";
+import { escapeRegex } from "../../../utils/regex.util";
 const MAX_SEARCH_TERM_LENGTH = 100;
-
-const escapeRegex = (text: string): string => {
-  return text.replace(/[-[\]{}()*+?.,\^$|#\s]/g, "\$&");
-};
-// const MAX_SEARCH_TERM_LENGTH = 100;
 
 interface ICursorPayload {
   value: string;
@@ -179,10 +175,7 @@ const getPosts = async (
     andCondition.push({
       $or: genreList.map((genre) => ({
         tag: {
-          $regex: new RegExp(
-            `^${genre.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
-            "i",
-          ),
+          $regex: new RegExp(`^${escapeRegex(genre)}$`, "i"),
         },
       })),
     });
@@ -363,7 +356,7 @@ const doFeaturedPosts = async (postId: string) => {
   }
 };
 
-const getSinglePost = async (id: string) => {
+const getSinglePost = async (id: string, token?: ITokenPayload | null) => {
   const postById = await Post.findOne({ _id: id, isDeleted: { $ne: true } })
     .populate("author", "name email createdAt")
     .populate({
@@ -377,7 +370,7 @@ const getSinglePost = async (id: string) => {
   return postById;
 };
 
-const getPostsByTag = async (tag: string, excludeId?: string) => {
+const getPostsByTag = async (tag: string, excludeId?: string, limit: number = 2) => {
   if (!tag) {
     return [];
   }
@@ -387,7 +380,7 @@ const getPostsByTag = async (tag: string, excludeId?: string) => {
     query._id = { $ne: excludeId };
   }
   const result = await Post.find(query)
-    .limit(2)
+    .limit(limit)
     .populate("author", "name email createdAt")
     .populate({
       path: "reactions",
@@ -519,6 +512,9 @@ const deletePost = async (postId: string, token: ITokenPayload) => {
   }
 
   await Bookmark.deleteMany({ storyId: postId });
+  // Delete all comments associated with the post to prevent orphaned
+  // comment documents accumulating in the database after post deletion.
+  await Comment.deleteMany({ postId });
 
   return post;
 };
