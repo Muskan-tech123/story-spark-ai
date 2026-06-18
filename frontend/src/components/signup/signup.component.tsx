@@ -152,35 +152,44 @@ const otpPayload = {
   };
 
   const handleOtpValidation = async () => {
-    const enteredOtp = otp?.trim();
-    if (!enteredOtp) { toast.error("Please enter OTP"); return; }
-    if (!registerInfo) { toast.error("Something went wrong. Please restart the process."); return; }
-    if (Date.now() > expiredAt) { toast.error("OTP expired. Please request a new one."); return; }
+  const enteredOtp = otp?.trim();
+  if (!enteredOtp) { toast.error("Please enter OTP"); return; }
+  if (!registerInfo) { toast.error("Something went wrong. Please restart the process."); return; }
+  if (Date.now() > expiredAt) { toast.error("OTP expired. Please request a new one."); return; }
 
-    setIsBusy(true);
-    try {
-      const otpResponse = await verifyOtp({ email: registerInfo.email, otp: enteredOtp }).unwrap();
-      if (otpResponse?.data?.verificationToken) {
-        const res = await registerUser({
-          ...registerInfo,
-          verificationToken: otpResponse.data.verificationToken,
-        }).unwrap();
-        if (res.data.accessToken) {
-          toast.success("OTP validated successfully!");
-          storeUserInfo({ accessToken: res.data.accessToken });
-          navigate("/");
-        }
-      } else {
-        throw new Error("No verification token received");
-      }
-    } catch (err: unknown) {
-      const e = err as { data?: Array<{ message?: string }>; message?: string };
-      const message = e?.data?.[0]?.message || e?.message || "OTP verification failed.";
-      toast.error(message);
-    } finally {
-      setIsBusy(false);
+  setIsBusy(true);
+  try {
+    const otpResponse = await verifyOtp({ email: registerInfo.email, otp: enteredOtp }).unwrap();
+
+    if (!otpResponse?.data?.verificationToken) {
+      throw new Error("No verification token received");
     }
-  };
+    try {
+      const res = await registerUser({
+        ...registerInfo,
+        verificationToken: otpResponse.data.verificationToken,
+      }).unwrap();
+
+      if (res.data.accessToken) {
+        toast.success("OTP validated successfully!");
+        storeUserInfo({ accessToken: res.data.accessToken });
+        navigate("/");
+      }
+    } catch (registerErr: unknown) {
+      const e = registerErr as { data?: Array<{ message?: string }>; message?: string };
+      const message = e?.data?.[0]?.message || e?.message || "Registration failed after OTP verification.";
+      toast.error(message);
+      console.log("registerUser error:", e);
+      return;
+    }
+  } catch (err: unknown) {
+    const e = err as { data?: Array<{ message?: string }>; message?: string };
+    const message = e?.data?.[0]?.message || e?.message || "OTP verification failed.";
+    toast.error(message);
+  } finally {
+    setIsBusy(false);
+  }
+};
 
   const handleResendOtp = async () => {
     if (cooldown > 0 || isBusy) return;
