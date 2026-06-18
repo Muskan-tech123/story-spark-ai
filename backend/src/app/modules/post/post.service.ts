@@ -14,6 +14,7 @@ import paginationHelper from "../../../utils/pagination_helper";
 import { postSearchFields } from "./post.constant";
 import { SortOrder, Types } from "mongoose";
 import { GamificationService } from "../gamification/gamification.service";
+import { WritingStreakService } from "../gamification/writing_streak.service";
 import { escapeRegex } from "../../../utils/regex.util";
 const MAX_SEARCH_TERM_LENGTH = 100;
 
@@ -114,6 +115,7 @@ const createPost = async (payload: IPostPayload, token: ITokenPayload) => {
         { new: true }
       );
       GamificationService.addXp(String(user._id), 50, "CREATED_POST").catch(console.error);
+      WritingStreakService.updateStreakAndUnlocks(String(user._id)).catch(console.error);
       if (updatedUser && updatedUser.postsCount === 1) {
         GamificationService.awardBadge(String(user._id), "First Story").catch(console.error);
       }
@@ -512,6 +514,9 @@ const deletePost = async (postId: string, token: ITokenPayload) => {
   }
 
   await Bookmark.deleteMany({ storyId: postId });
+  // Delete all comments associated with the post to prevent orphaned
+  // comment documents accumulating in the database after post deletion.
+  await Comment.deleteMany({ postId });
 
   return post;
 };
@@ -549,6 +554,7 @@ const remixStory = async (postId: string, prompt: string, token: ITokenPayload) 
       user._id,
       { $inc: { postsCount: 1 } }
     );
+    WritingStreakService.updateStreakAndUnlocks(String(user._id)).catch(console.error);
   }
 
   return res;
@@ -587,6 +593,7 @@ const translateStory = async (postId: string, language: string, token: ITokenPay
       user._id,
       { $inc: { postsCount: 1 } }
     );
+    WritingStreakService.updateStreakAndUnlocks(String(user._id)).catch(console.error);
   }
 
   return res;

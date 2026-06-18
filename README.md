@@ -1,5 +1,6 @@
 <div align="center">
-<h1>👩‍💻 StorySparkAI is an open-source platform designed for creative minds to generate and share multiple story variations from a single prompt. Perfect for writers, creators, and enthusiasts exploring AI-powered storytelling!</h1>
+<h1>👩‍💻 StorySparkAI</h1>
+<p>An open-source platform designed for creative minds to generate and share multiple story variations from a single prompt. Perfect for writers, creators, and enthusiasts exploring AI-powered storytelling!</p>
 </div>
 
 <p align="center">
@@ -10,41 +11,50 @@
    <img src="https://img.shields.io/github/forks/ronisarkarexe/story-spark-ai?style=for-the-badge&logo=appveyor" alt="Forks"/>
    </a>
    <a href="https://github.com/ronisarkarexe/story-spark-ai/stargazers" target="blank">
-   <img src="https://img.shields.io/github/stars/ronisarkarexe/story-spark-ai?style=for-the-badge&logo=appveyor" alt="Star"/>
+   <img src="https://img.shields.io/github/stars/ronisarkarexe/story-spark-ai?style=for-the-badge&logo=appveyor" alt="Stars"/>
    </a>
    <a href="https://github.com/ronisarkarexe/story-spark-ai/issues" target="blank">
-   <img src="https://img.shields.io/github/issues/ronisarkarexe/story-spark-ai.svg?style=for-the-badge&logo=appveyor" alt="Click Vote Issue"/>
+   <img src="https://img.shields.io/github/issues/ronisarkarexe/story-spark-ai.svg?style=for-the-badge&logo=appveyor" alt="Issues"/>
    </a>
    <a href="https://github.com/ronisarkarexe/story-spark-ai/pulls" target="blank">
-   <img src="https://img.shields.io/github/issues-pr/ronisarkarexe/story-spark-ai.svg?style=for-the-badge&logo=appveyor" alt="Click Vote Open Pull Request"/>
+   <img src="https://img.shields.io/github/issues-pr/ronisarkarexe/story-spark-ai.svg?style=for-the-badge&logo=appveyor" alt="Pull Requests"/>
    </a>
 </p>
 
-## Table of Contents
+---
 
-- [Table of Contents](#table-of-contents)
-- [About 🚀](#about-)
-- [Features 💪](#features-)
-- [Local development (monorepo)](#local-development-monorepo)
-- [Environment variables](#environment-variables)
-- [Troubleshooting](#troubleshooting)
-- [Contributing 👨‍💻](#contributing-)
-- [Contributors 🤝](#contributors-)
+## 📚 Table of Contents
+- [About 🚀](#about-🚀)
+- [Features 💪](#features-💪)
+- [Local Development](#local-development-monorepo)
+- [Environment Variables](#environment-variables)
+- [Troubleshooting 🛠️](#troubleshooting-🛠️)
+- [Contributing 👨‍💻](#contributing-👨‍💻)
+- [Contributors 🤝](#contributors-🤝)
 - [Maintainers](#maintainers)
-- [License](#license)
-- [Support 🙏](#support-)
+- [License 📜](#license-📜)
+- [Support 🙏](#support-🙏)
 
-<a id="about"></a>
+---
 
 ## About 🚀
+- Website: [StorySparkAI](https://storysparkai.vercel.app/)  
+- **StorySparkAI** empowers creative minds by generating and showcasing AI-crafted stories from user prompts in a simple, engaging way.  
+- Users can:
+  - Input an idea or prompt
+  - Explore multiple story variations
+  - Save favorites
+  - Leverage AI analysis to enhance their creative writing journey
 
-- story-spark-ai - [Website](https://storysparkai.vercel.app/)
-- **`StorySparkAi`** is an open-source platform designed to empower creative minds by generating and showcasing AI-crafted stories from user prompts in a simple, engaging way.
-- With **`StorySparkAi`**, users can input an idea, explore multiple story variations, save their favorites, and leverage AI analysis to enhance their creative writing journey.
-
-<a id="features"></a>
+---
 
 ## Features 💪
+- **AI-Powered Story Generation**: Create unique stories instantly using advanced AI models.  
+- **Prompt-Based Storytelling**: Provide a prompt and watch it come to life.  
+- **Story Bookmarks & History**: Save and revisit your favorite creations.  
+- **AI Analysis**: Get summaries, critiques, and insights on your stories.  
+- **Creative Writing Assistance**: Overcome writer’s block with intelligent suggestions.  
+- **Responsive UI**: Seamless experience across devices.  
 
 - **Dark-Mode**: Toggle between light and dark themes for a comfortable reading experience.
 - **Google Login**: Sign in quickly and securely using your Google account.
@@ -58,12 +68,11 @@
 - **Creative Writing Assistance**: Overcome writer's block with intelligent suggestions and variations.
 - **Responsive User Experience**: Enjoy a seamless and beautiful interface across all devices.
 
-### Local development (monorepo)
+## Local Development (Monorepo)
 
-**Prerequisites:** Node.js **18.18+**, npm **9+**, MongoDB URI for the API.
+**Prerequisites:** Node.js **18.18+**, pnpm **8+**, MongoDB URI for the API.
 
 1. **Clone the repository**
-
    ```bash
    git clone https://github.com/<your-github-username>/story-spark-ai.git
    ```
@@ -71,7 +80,8 @@
 
    ```bash
    cd story-spark-ai
-   ```
+
+
 
 3. **Install dependencies** (single install at the repo root — npm workspaces)
 
@@ -111,9 +121,9 @@
 7. **Production builds**
 
    ```bash
-   npm run build
-   npm run start:backend    # requires `npm run build:backend` first
-   npm run start:frontend   # serves built static app (preview)
+   pnpm run build
+   pnpm run start:backend    # requires `pnpm run build:backend` first
+   pnpm run start:frontend   # serves built static app (preview)
    ```
 
 ### Deploying on Vercel
@@ -455,9 +465,8 @@ VITE_GOOGLE_CLIENT_ID=your-google-client-id
 
 
 <a id="contributing"></a>
-## Troubleshooting 🛠️
 
-Running into issues during setup? Here are the most common errors and how to fix them.
+## Contributing 👨‍💻
 
 ---
 
@@ -516,10 +525,10 @@ Once the update completes, click **Try Again** in Docker Desktop. If the issue p
 ```bash
 pnpm install
 ```
-Then commit the updated `package-lock.json` before rebuilding your Docker image:
+Then commit the updated `pnpm-lock.yaml` before rebuilding your Docker image:
 ```bash
-git add package-lock.json
-git commit -m "chore: regenerate package-lock.json"
+git add pnpm-lock.yaml
+git commit -m "chore: regenerate pnpm-lock.yaml"
 ```
 
 ---
@@ -592,10 +601,18 @@ Thanks to everyone who has helped build **Story Spark AI**. This grid updates au
 Thank you for contributing to our open-source project! We appreciate your support 🚀 <br>
 Don't forget to leave a star ⭐
 
+
+## 🌐 Home Page Feature Overview
+
+The Home Page serves as the central hub of Story-Spark-AI. Below is a breakdown of its core UI elements and features:
+
+- **Hero Banner & CTA Buttons:** The primary landing section designed to introduce users to the platform with direct call-to-action buttons.
+- **StorySparkAI v2.0 Live Announcement Badge:** Highlights the latest version features and platform updates.
+- **Feature Cards:** Highlights key functionalities including *Infinite Variations*, *AI Co-Writer*, and *Community Driven* features.
+- **Featured Posts Section:** Displays curated or top-performing user stories.
+- **Trending Topics / Hashtag Discovery:** Allows users to explore popular content categories and discover active discussions.
+- **Cookie Consent Modal:** Manages user privacy preferences regarding Essential, Functional, and Analytics cookies.
 ### Proposed Feature: Trending Topics & UI Enhancements
 - Added responsive writing genres (Fantasy, Mystery, Romance) next to recommended writers.
 - Implemented a clean 'How It Works' section to polish the landing page layout.
 
-### Proposed Feature: Trending Topics & UI Enhancements
-- Added responsive writing genres (Fantasy, Mystery, Romance) next to recommended writers.
-- Implemented a clean 'How It Works' section to polish the landing page layout.
