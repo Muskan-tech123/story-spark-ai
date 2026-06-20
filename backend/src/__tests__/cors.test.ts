@@ -25,13 +25,13 @@ describe('CORS Configuration', () => {
     }
   });
 
-  it('should handle requests missing the Origin header gracefully', async () => {
-    process.env.NODE_ENV = 'development';
+  it('should reject requests missing the Origin header', async () => {
+    process.env.NODE_ENV = 'production';
     const response = await request(app)
       .get('/api/v1');
-
-    // The app does not block requests without an Origin header —
-    // it falls through to the normal route handler (404 "API Not Found").
-    expect(response.status).toBeLessThan(500);
+    
+    // Currently, this will likely NOT have an error because of (!origin || ...)
+    // We want it to fail.
+    expect(response.body.message).toContain('Origin header required');
   });
 });

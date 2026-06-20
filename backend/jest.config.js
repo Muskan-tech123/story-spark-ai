@@ -9,5 +9,5 @@ module.exports = {
   testTimeout: 60000,
   // Inject required env vars before any module is loaded so that
   // config/index.ts (which calls requiredEnv at import time) never throws.
-  setupFiles: ["<rootDir>/src/__tests__/setup.ts"],
+  setupFiles: ["<rootDir>/jest.setup.ts"],
 };
