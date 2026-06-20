@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CharacterProfileCard from "./CharacterProfileCard";
+import StoryGenreTransformation from "./StoryGenreTransformation";
 import { CharacterProfile } from "./stories.utils";
 import { getShortenedText, ITopicData, topicsData } from "./stories.utils";
 import toast, { Toaster } from "react-hot-toast";
@@ -39,6 +40,7 @@ const StoriesViewComponent: React.FC<StoriesComponentProps> = ({
   const [characterProfiles, setCharacterProfiles] = useState<CharacterProfile[]>([]);
   const [profileLoading, setProfileLoading] = useState<boolean>(false);
   const [createPost] = useCreatePostMutation();
+  const [showGenreTransformation, setShowGenreTransformation] = useState<boolean>(false);
 
   useEffect(() => {
     setSelectTopics(topics.filter((topic) => topic.selected));
@@ -280,6 +282,13 @@ const handleGenerateCharacterProfile = async () => {
                     >
                       📄 Export PDF
                     </button>
+                    <button
+                      type="button"
+                      className="rounded-lg px-4 py-2 bg-pink-700 text-white font-semibold hover:bg-pink-600 transition-colors"
+                      onClick={() => setShowGenreTransformation(true)}
+                    >
+                      🎭 Transform Genre
+                    </button>
                   </>
                 )}
                 <button
@@ -394,6 +403,15 @@ const handleGenerateCharacterProfile = async () => {
           </div>
         </div>
       </div>
+      {showGenreTransformation && selectedStory && (
+        <StoryGenreTransformation
+          story={{
+            title: selectedStory.title,
+            content: selectedStory.content,
+          }}
+          onClose={() => setShowGenreTransformation(false)}
+        />
+      )}
       <Toaster position="top-right" reverseOrder={false} />
     </div>
   );
